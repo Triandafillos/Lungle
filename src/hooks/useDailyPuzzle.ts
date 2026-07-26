@@ -7,10 +7,15 @@ import { languageList } from "../data/languageList";
 export function useDailyPuzzle() {
     const [wordInfo] = useState<WordInfo>(getDailyPuzzle());
     const [progress, setProgress] = useState<Progress>({ guesses: [], language_ids: [] });
+    const [won, setWon] = useState<boolean>(false);
+    const [lost, setLost] = useState<boolean>(false);
+    
+    const msInDay: number = 1000 * 60 * 60 * 24;
+    const index = Math.floor((new Date().getTime() - new Date(2026, 6, 25).getTime()) / msInDay) % wordList.length;
+    const [puzzleNumber] = useState<number>(index);
 
-
+    //Save progress to local storage whenever it changes
     useEffect(() => {
-        console.log("Saving progress to local storage:", progress);
         localStorage.setItem("progress", JSON.stringify(progress));
     }, [progress]);
 
@@ -42,6 +47,14 @@ export function useDailyPuzzle() {
             guesses: [...prev.guesses, guess],
         }));
 
+        //Check if the guess is correct
+        if (guess.toLowerCase() === wordInfo.word.toLowerCase()) {
+            setWon(true);
+            return;
+        } else if (progress.guesses.length + 1 >= 7) {
+            setLost(true);
+            return;
+        }
 
         //Pick a random language other than English and not already given
         const filteredLanguages = languageList
@@ -57,10 +70,16 @@ export function useDailyPuzzle() {
         }
     };
 
-    return { wordInfo, progress, makeGuess };
+    return { wordInfo, progress, makeGuess, won, lost, puzzleNumber };
 }
 
 export function getDailyPuzzle(): WordInfo {
+    // const today = new Date();
 
-    return wordList[0]; // Placeholder for daily puzzle logic;
+    // Convert milliseconds to days
+    // const msInDay: number = 1000 * 60 * 60 * 24;
+    //const index = Math.floor((today.getTime() - new Date(2026, 6, 25).getTime()) / msInDay) % wordList.length;
+    const index = Math.floor(Math.random() * wordList.length);
+
+    return wordList[index];
 }

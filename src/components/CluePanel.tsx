@@ -21,7 +21,7 @@ export default function CluePanel({ progress, wordInfo }: Props) {
             <div className="card bg-base-200 min-h-100 p-2 gap-2">
                 <ul className="list">
                     {progress && progress.language_ids.map((language_id, index) => (
-                        <li className="flex gap-2 items-center justify-center">
+                        <li className="flex gap-2 items-center justify-center" key={index}>
                             <p className="text-2xl">{wordInfo.language_details.find(x => x.language_id == language_id)?.translation}</p>
                             <button className="btn btn-ghost btn-circle"
                                 onClick={() => speakWord(wordInfo.language_details.find(x => x.language_id == language_id)?.translation || "",
@@ -38,7 +38,10 @@ export default function CluePanel({ progress, wordInfo }: Props) {
                                         strokeWidth="2"
                                         d="M11 5 6 9H3v6h3l5 4V5zm5.5 3a6 6 0 010 8m2.5-10a9 9 0 010 12" /></svg>
                             </button>
-                            <span>{languageList.find(x => x.language_id == language_id)?.flags[0]}</span>
+
+                            <img src={`${languageList.find(x => x.language_id == language_id)?.flags[0].toLowerCase()}.svg`}
+                                alt={languageList.find(x => x.language_id == language_id)?.name}
+                                className="h-5 w-5" />
                         </li>
                     ))}
                 </ul>

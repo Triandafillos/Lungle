@@ -6,9 +6,10 @@ type Props = {
     disabled?: boolean;
     text?: string;
     progress: Progress;
+    setGuess?: (guess: string) => void;
 }
 
-export default function WordGuess({ disabled = false, length, text, progress }: Props) {
+export default function WordGuess({ disabled = false, length, text, progress, setGuess }: Props) {
     const refs = useRef<(HTMLInputElement | null)[]>([])
 
     useEffect(() => {
@@ -56,6 +57,10 @@ export default function WordGuess({ disabled = false, length, text, progress }: 
                             }
                             refs.current[index + 1]?.focus();
                         }
+                        const guess = refs.current.map((input) => input?.value || "").join("");
+                        if(setGuess){
+                            setGuess(guess);
+                        } 
                     }}
                     onKeyDownCapture={(e) => {
                         if (e.key === "Backspace") {

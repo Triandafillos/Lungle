@@ -2,43 +2,19 @@ import { useEffect, useState } from "react";
 import type { Progress, WordInfo } from "../types";
 import { wordList } from "../data/wordList";
 import { languageList } from "../data/languageList";
+import { usePlayerStats } from "./usePlayerStats";
 
 //Retrieve daily word and user progress, and make guesses and store progress
 export function useDailyPuzzle() {
     const [wordInfo] = useState<WordInfo>(getDailyPuzzle());
-    const [progress, setProgress] = useState<Progress>({ guesses: [], language_ids: [] });
-    const [won, setWon] = useState<boolean>(false);
-    const [lost, setLost] = useState<boolean>(false);
-    
-    const msInDay: number = 1000 * 60 * 60 * 24;
-    const index = Math.floor((new Date().getTime() - new Date(2026, 6, 25).getTime()) / msInDay) % wordList.length;
-    const [puzzleNumber] = useState<number>(index);
+    const [progress, setProgress] = useState<Progress>(getInitialProgress());
+    const [puzzleNumber] = useState<number>(getDailyPuzzleNumber);
+    const { playerStats, recordWin, recordLoss } = usePlayerStats();
 
     //Save progress to local storage whenever it changes
     useEffect(() => {
         localStorage.setItem("progress", JSON.stringify(progress));
     }, [progress]);
-
-    //Load progress from local storage, or pick initial language if none exists
-    useEffect(() => {
-        const saved = localStorage.getItem("progress");
-        if (saved) {
-            const parsed: Progress = JSON.parse(saved);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setProgress(parsed);
-            if (parsed.language_ids.length === 0) {
-                const filteredLanguages = languageList.filter(lang => lang.language_id !== "en");
-                const randomIndex = Math.floor(Math.random() * filteredLanguages.length);
-                const language = filteredLanguages[randomIndex];
-                setProgress((prev) => ({
-                    ...prev,
-                    language_ids: [...prev.language_ids, language.language_id],
-                }));
-            }
-        }
-
-
-    }, []);
 
     const makeGuess = (guess: string) => {
         //Make guesses and save progress to local storage
@@ -49,10 +25,18 @@ export function useDailyPuzzle() {
 
         //Check if the guess is correct
         if (guess.toLowerCase() === wordInfo.word.toLowerCase()) {
-            setWon(true);
+            recordWin();
+            setProgress((prev) => ({
+                ...prev,
+                won: true
+            }));
             return;
         } else if (progress.guesses.length + 1 >= 7) {
-            setLost(true);
+            recordLoss();
+            setProgress((prev) => ({
+                ...prev,
+                lost: true
+            }));
             return;
         }
 
@@ -70,16 +54,49 @@ export function useDailyPuzzle() {
         }
     };
 
-    return { wordInfo, progress, makeGuess, won, lost, puzzleNumber };
+    return { wordInfo, progress, makeGuess, puzzleNumber, playerStats };
 }
 
 export function getDailyPuzzle(): WordInfo {
-    // const today = new Date();
-
-    // Convert milliseconds to days
-    // const msInDay: number = 1000 * 60 * 60 * 24;
-    //const index = Math.floor((today.getTime() - new Date(2026, 6, 25).getTime()) / msInDay) % wordList.length;
-    const index = Math.floor(Math.random() * wordList.length);
+    const index = getDailyPuzzleNumber()
 
     return wordList[index];
+}
+
+export function getInitialProgress(): Progress {
+    const saved = localStorage.getItem("progress");
+    const currentPuzzleNumber = getDailyPuzzleNumber();
+    let resetData = true;
+    let progress: Progress = { guesses: [], language_ids: [], won: false, lost: false, puzzleNumber: currentPuzzleNumber };
+
+    if (saved) {
+        progress = JSON.parse(saved);
+        if (progress.puzzleNumber == currentPuzzleNumber) {
+            resetData = false;
+        }
+    }
+
+    if (resetData) {
+        const filteredLanguages = languageList.filter(lang => lang.language_id !== "en");
+        const randomIndex = Math.floor(Math.random() * filteredLanguages.length);
+        const language = filteredLanguages[randomIndex];
+        progress = {
+            guesses: [],
+            language_ids: [language.language_id],
+            won: false,
+            lost: false,
+            puzzleNumber: currentPuzzleNumber
+        }
+    }
+
+    return progress;
+}
+
+export function getDailyPuzzleNumber() {
+    const today = new Date();
+
+    // Convert milliseconds to days
+    const msInDay: number = 1000 * 60 * 60 * 24;
+    return Math.floor((today.getTime() - new Date(2026, 6, 25).getTime()) / msInDay) % wordList.length;
+
 }

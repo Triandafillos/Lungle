@@ -36,7 +36,7 @@ export default function WordGuess({ disabled = false, length, text, progress, se
                     disabled={disabled}
                     value={text[index].toUpperCase()}
                     ref={el => { (refs.current[index] = el) }}
-                    className="border bg-white h-15 w-15 text-4xl text-center 
+                    className="border bg-white h-10 w-10 lg:h-15 lg:w-15 text-4xl text-center 
                     caret-transparent font-bold"
                     maxLength={1}
                     readOnly />
@@ -47,7 +47,7 @@ export default function WordGuess({ disabled = false, length, text, progress, se
                     key={index}
                     disabled={disabled}
                     ref={el => { (refs.current[index] = el) }}
-                    className="border bg-white h-15 w-15 text-4xl text-center 
+                    className="border bg-white h-10 w-10 lg:h-15 lg:w-15 text-4xl text-center 
                     caret-transparent font-bold"
                     maxLength={1}
                     onChange={(e) => {

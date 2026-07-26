@@ -18,4 +18,14 @@ export type Language = {
 export type Progress = {
     guesses: string[];
     language_ids: string[];
+    won: boolean;
+    lost: boolean;
+    puzzleNumber: number;
+}
+
+export type PlayerStats = {
+    gamesPlayed: number;
+    gamesWon: number;
+    streak: number;
+    lastPuzzleWon: number;
 }

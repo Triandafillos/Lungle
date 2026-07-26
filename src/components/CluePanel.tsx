@@ -16,16 +16,19 @@ export default function CluePanel({ progress, wordInfo }: Props) {
     }
 
     return (
-        <div className=" gap-3 w-3/10">
+        <div className=" gap-3 w-full lg:w-3/10">
             <p className="text-3xl font-bold p-3">Clues:</p>
-            <div className="card bg-base-200 min-h-100 p-2 gap-2">
+            <div className="card bg-base-200 lg:min-h-100 p-2 gap-2">
                 <ul className="list">
                     {progress && progress.language_ids.map((language_id, index) => (
                         <li className="flex gap-2 items-center justify-center" key={index}>
-                            <p className="text-2xl">{wordInfo.language_details.find(x => x.language_id == language_id)?.translation}</p>
+                            <p className="text-2xl">
+                                {wordInfo.language_details.find(x => x.language_id == language_id)?.translation}
+                            </p>
                             <button className="btn btn-ghost btn-circle"
-                                onClick={() => speakWord(wordInfo.language_details.find(x => x.language_id == language_id)?.translation || "",
-                                    languageList.find(x => x.language_id == language_id)?.code || "en-US")
+                                onClick={() =>
+                                    speakWord(wordInfo.language_details.find(x => x.language_id == language_id)?.translation || "",
+                                        languageList.find(x => x.language_id == language_id)?.code || "en-US")
                                 }>
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     className="h-5 w-5"
@@ -41,6 +44,7 @@ export default function CluePanel({ progress, wordInfo }: Props) {
 
                             <img src={`${languageList.find(x => x.language_id == language_id)?.flags[0].toLowerCase()}.svg`}
                                 alt={languageList.find(x => x.language_id == language_id)?.name}
+                                title={languageList.find(x => x.language_id == language_id)?.name}
                                 className="h-5 w-5" />
                         </li>
                     ))}

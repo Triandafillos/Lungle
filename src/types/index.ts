@@ -28,4 +28,5 @@ export type PlayerStats = {
     gamesWon: number;
     streak: number;
     lastPuzzleWon: number;
+    totalGuesses?: number;
 }

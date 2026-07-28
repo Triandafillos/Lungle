@@ -10,14 +10,16 @@ export function usePlayerStats() {
         localStorage.setItem("stats", JSON.stringify(playerStats));
     }, [playerStats]);
 
-    const recordWin = (() => {
+    const recordWin = ((numberGuesses: number) => {
         const puzzleNumber = getDailyPuzzleNumber();
         const streak = puzzleNumber == (playerStats.lastPuzzleWon + 1) ? playerStats.streak + 1 : 1;
         const newStats: PlayerStats = {
             gamesPlayed: playerStats.gamesPlayed + 1,
             gamesWon: playerStats.gamesWon + 1,
             streak: streak,
-            lastPuzzleWon: puzzleNumber
+            lastPuzzleWon: puzzleNumber,
+            totalGuesses: playerStats.totalGuesses ?
+                playerStats.totalGuesses + numberGuesses : (numberGuesses * (playerStats.gamesPlayed + 1))
         }
 
         setPlayerStats(newStats);
@@ -28,7 +30,8 @@ export function usePlayerStats() {
             gamesPlayed: playerStats.gamesPlayed + 1,
             gamesWon: playerStats.gamesWon,
             streak: 0,
-            lastPuzzleWon: playerStats.lastPuzzleWon
+            lastPuzzleWon: playerStats.lastPuzzleWon,
+            totalGuesses: playerStats.totalGuesses ? playerStats.totalGuesses + 8 : (8 * (playerStats.gamesPlayed + 1))
         }
 
         setPlayerStats(newStats);
@@ -39,5 +42,5 @@ export function usePlayerStats() {
 
 export function getInitialStats(): PlayerStats {
     const saved = localStorage.getItem("stats");
-    return saved ? JSON.parse(saved) : {gamesPlayed: 0, gamesWon: 0, streak: 0, lastPuzzleWon: 0}
+    return saved ? JSON.parse(saved) : { gamesPlayed: 0, gamesWon: 0, streak: 0, lastPuzzleWon: 0 }
 }

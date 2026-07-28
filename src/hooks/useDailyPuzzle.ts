@@ -25,7 +25,7 @@ export function useDailyPuzzle() {
 
         //Check if the guess is correct
         if (guess.toLowerCase() === wordInfo.word.toLowerCase()) {
-            recordWin();
+            recordWin(progress.guesses.length+1);
             setProgress((prev) => ({
                 ...prev,
                 won: true

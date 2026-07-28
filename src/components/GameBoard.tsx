@@ -19,6 +19,12 @@ export default function GameBoard({ progress, makeGuess, wordInfo }: Props) {
         }
     }
 
+    const handleSkip = () => {
+        if (!progress.won && !progress.lost) {
+            makeGuess('x'.repeat(wordInfo.word.length));
+        }
+    }
+
     return (
         <div className="flex flex-col gap-3 flex-1 w-full lg:w-7/10">
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -39,8 +45,9 @@ export default function GameBoard({ progress, makeGuess, wordInfo }: Props) {
                 ))}
 
                 <div className="align-items-center mt-5">
-                    <button className="btn btn-primary text-center w-20"
+                    <button className="btn btn-primary text-center w-20 me-5"
                         type="submit">Guess</button>
+                    <button className="btn btn-info" type="button" onClick={handleSkip}>Skip</button>
                 </div>
             </form>
 

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { languageList } from "../data/languageList";
 import type { Progress, WordInfo } from "../types";
 
@@ -7,6 +8,20 @@ type Props = {
 }
 
 export default function CluePanel({ progress, wordInfo }: Props) {
+    const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        const loadVoices = () => {
+            setVoices(speechSynthesis.getVoices());
+        };
+        loadVoices()
+        speechSynthesis.addEventListener("voiceschanged", loadVoices);
+
+        return () => {
+            speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+        };
+    }, []);
 
     const speakWord = (word: string, code: string) => {
         const utterance = new SpeechSynthesisUtterance(word);
@@ -25,22 +40,25 @@ export default function CluePanel({ progress, wordInfo }: Props) {
                             <p className="text-2xl">
                                 {wordInfo.language_details.find(x => x.language_id == language_id)?.translation}
                             </p>
-                            <button className="btn btn-ghost btn-circle"
-                                onClick={() =>
-                                    speakWord(wordInfo.language_details.find(x => x.language_id == language_id)?.translation || "",
-                                        languageList.find(x => x.language_id == language_id)?.code || "en-US")
-                                }>
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M11 5 6 9H3v6h3l5 4V5zm5.5 3a6 6 0 010 8m2.5-10a9 9 0 010 12" /></svg>
-                            </button>
+                            {/* Display the audio button if the language exists for the browser */}
+                            {voices.some(v => v.lang === languageList.find(x => x.language_id == language_id)?.code) &&
+                                <button className="btn btn-ghost btn-circle"
+                                    onClick={() =>
+                                        speakWord(wordInfo.language_details.find(x => x.language_id == language_id)?.translation || "",
+                                            languageList.find(x => x.language_id == language_id)?.code || "en-US")
+                                    }>
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M11 5 6 9H3v6h3l5 4V5zm5.5 3a6 6 0 010 8m2.5-10a9 9 0 010 12" /></svg>
+                                </button>
+                            }
 
                             <img src={`${languageList.find(x => x.language_id == language_id)?.flags[0].toLowerCase()}.svg`}
                                 alt={languageList.find(x => x.language_id == language_id)?.name}

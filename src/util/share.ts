@@ -32,7 +32,11 @@ export function getShareText(progress: Progress, playerStats: PlayerStats): stri
         text = text + `Language #${index + 1} ${flag}\n`
 
     });
-    text = text + `Games Played: ${playerStats.gamesPlayed}\tGames Won: ${playerStats.gamesWon}\tStreak: ${playerStats.streak}\n`;
+    text = text + `Games Played: ${playerStats.gamesPlayed}\tGames Won: ${playerStats.gamesWon}\tStreak: ${playerStats.streak}`;
+    if(playerStats.totalGuesses){
+        text = text + `\tAverage Score: ${playerStats.totalGuesses / playerStats.gamesPlayed}`;
+    }
+    text = text + '\n';
     text = text + 'https://lungle.georgepapadakis.com/play';
     return text;
 }

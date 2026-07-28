@@ -53,11 +53,11 @@ export default function WordGuess({ disabled = false, length, text, progress, se
                     onChange={(e) => {
                         if (e.target.value && index < refs.current.length) {
                             if (refs.current[index]) {
-                                refs.current[index].value = e.target.value.toUpperCase();
+                                refs.current[index].value = e.target.value.toUpperCase().slice(0,1);
                             }
                             refs.current[index + 1]?.focus();
                         }
-                        const guess = refs.current.map((input) => input?.value || "").join("");
+                        const guess = refs.current.map((input) => input?.value.slice(0,1) || "").join("");
                         if(setGuess){
                             setGuess(guess);
                         } 
